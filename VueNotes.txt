@@ -1,0 +1,200 @@
+
+-string interpolation -- {{  }}
+
+-v-bind:href="dynamic" or :href="dynamic"
+
+-v-on:click or @click
+
+-Event Modifiers == v-on:submit.prevent="submit"
+
+-v-once ==> evaluates the dynamic html only once
+
+-two way binding =>v-model
+
+-computed properties
+
+-dynamic styling
+
+-ref ==> <input ref="userref" /> ===> access to this.$refs.userref in vue file	
+
+-props and props validating
+  props: {
+    // battleLogs: Array,
+    battleLogs: {
+      type: Array,
+      required: true,
+      default : [],
+      validator:function(val){
+        return val === "1"
+      }
+    },
+  },
+
+- childparent communication {
+
+  in child 
+
+  this.$emit('toggle-favourite',arg1);
+
+  in parent
+
+  @toggle-favourite='your method'
+
+}
+	
+-- emits:['your method'] 
+	or 
+   emits : {
+	'your method' : function (id) { 
+	}
+	
+	}
+		  
+-watch ==> it is the same name as a data property , and it executes everytime when there is changes in that particular data property
+-==> watch:{
+	name(newval,oldval) {
+
+	}
+}
+
+- get access to data to child of child from parent directly ,  
+  it only works in parent --> child --> child --> child .....
+
+--- parent
+<script>
+export default {
+
+  data(){
+    return {
+      topics:{
+        asd:asd
+      }
+    }
+  }
+
+  provide:{
+    topics:{
+      asd:asd
+    }
+  } 
+
+  or
+
+  provide() {
+    return {
+      topics: this.topics
+    }
+  }
+}
+</script>
+
+--- child
+<script>
+export default {
+  inject:['topics']
+}
+</script>
+
+////////////////////////// SLOTS /////////////////////////////////////
+
+<slot></slot> helps to create a wrapper compoenet   
+
+similarly when we wrap an copm around html and that html is available as children ,
+so to access that children slot is used.
+
+
+v-slot:header can also be written as #header
+
+
+--named slots
+
+<Card> 
+  <template v-slot:header>
+    <p>hello</p>
+  </template>
+  <div v-slot:default>
+    hello2
+  </div>
+</Card>
+
+
+--in component Card
+
+<template>
+  <div>
+    <header>
+      <slot name="header"></slot>                 // this is slot with name
+    </header>
+    <div>
+      <slot></slot>                               // this is default slot without name
+    </div>
+  </div>
+</template>
+
+
+Also can access slots in javascript like this.$slots.header
+
+
+///////////////////////// DYNAMIC COMPONENTS /////////////////////////////
+
+import Logger from "../components/Logger.vue";
+import Sidebar from "./components/Sidebar.vue";
+
+
+
+<component  :is="activecomp"></component>
+
+<script>
+  data(){
+    return{
+      activecomp:"Sidebar"
+    }
+  }
+</script>
+
+
+-- this conditionally renders the components
+
+
+
+<keep-alive>
+  <component  :is="activecomp"></component>
+</keep-alive>
+
+-- this keep alive keeps the tabs components alive and don not destroy it , 
+so for eg if any input textt is written there and you swtich tabs then it will stay same
+
+////////////////////////////// teleport //////////////////////////////////////
+
+<teleport to="body" to="#app">
+  <h1>asdasd</h1>
+</teleport>
+
+used to teleport the element to desired dom element 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------
+doubts:
+-- in script tag what is normal script and the setup script
+
+
+
