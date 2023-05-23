@@ -21,6 +21,11 @@ export default {
           title: "Monster",
           slug: "monster",
         },
+        {
+          path: "/jobapp",
+          title: "Job App",
+          slug: "jobapp",
+        },
       ],
     };
   },

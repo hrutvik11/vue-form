@@ -20,6 +20,11 @@ const router = createRouter({
       name: "monster",
       component: () => import("../views/MonsterView.vue"),
     },
+    {
+      path: "/jobapp",
+      name: "jobapp",
+      component: () => import("../views/JobAppView.vue"),
+    },
   ],
 });
 
