@@ -164,7 +164,11 @@ import Sidebar from "./components/Sidebar.vue";
 -- this keep alive keeps the tabs components alive and don not destroy it , 
 so for eg if any input textt is written there and you swtich tabs then it will stay same
 
+
+
 ////////////////////////////// teleport //////////////////////////////////////
+
+
 
 <teleport to="body" to="#app">
   <h1>asdasd</h1>
@@ -175,6 +179,128 @@ used to teleport the element to desired dom element
 
 
 
+////////////////////////////// Routing //////////////////////////////////////
+
+routes:[
+  { path: "/teams" , name: "team", component:TeamsList },
+  { path: "/teams/:teamid" , name: "team-members" , component: TeamMembers , props: true }
+]
+
+-to load the root routes we use <RouterView/> in app.vue
+
+
+-to navigate:
+this.$router.push("/path")
+
+-dyanamic route:
+{path:"/teams/:teamid"}
+
+-access the dynamic route using: 
+this.$route.params.teamid
+
+-params as props:
+{path:"/teams/:teamid" , compoenet:myComp , props:true}
+
+hence teamid will be available in myComp as prop
+
+-redirect:
+{ path: "/" , redirect: "/teams"  }
+
+-No route found : 
+{ path: " /:notFound(.*) " , component:element  }
+
+
+
+-NESTED ROUTING
+
+routes:[
+  { path: "/teams" , component:TeamsList , childred : [
+      { path: "/:teamid" , component: TeamMembers , props: true }
+    ]
+  },
+]
+
+--  here is nested routes , now the teamid is the children and hence it will
+    not render using the root level  <RouterView/> in app.vue.
+
+--  we need to define a new  <RouterView/> in TeamsList where the /teams comp is loaded.
+
+
+-NAMED ROUTES && QUERY PARAMS
+
+<RouterLink :to="{name : 'team-members' , params: { teamID : this.id } , query: { sort: 'asc' } }"></RouterLink>
+
+access query params using this.$route.query
+
+
+////////////////////////////// NAVIGATION GUARD //////////////////////////////////////
+
+- for global guard
+
+in app.js router.beforeEach(function (to , from , next) {
+
+  if( asd = true ) {
+    next(true);
+  } else {
+    next(false)
+
+  }
+})
+
+-this method is call before every nagivation action , before each route loads
+
+- for local route guard
+
+routes:[
+  { path: "/teams" , name: "team", component:TeamsList },
+  { path: "/teams/:teamid" , name: "team-members" , component: TeamMembers , props: true , 
+  beforeEnter(to, from ,next) {
+
+  } }
+]
+
+
+- STOP USER FROM NAVIGATING
+
+in component there is method called beforeRouteLeave(to, from , next) in which
+you can code to prevent user from navigating to differnt comp unless for eg.
+a form is submitted.
+
+
+
+////////////////////////// VUEX /////////////////////////////////
+
+import { createStore } from "vuex";
+
+const store = createStore({
+
+      state() {
+	return {
+	  counter : 0 
+	}
+      },
+      mutation:{ 
+	      nameofmethod(state,payload) {
+	      	state.number+= payload
+	      }
+      },
+      getters:{
+      	finalCounter(state) {
+      		return state.counter * 2 
+      	}
+      },
+      action:{
+      
+	      nameofmethod(context) {
+	      
+		      const data = await fetchdata()
+		      context.commit('nameofmethod')
+	      
+	      }
+      
+      }
+
+})
 
 
 
@@ -182,15 +308,201 @@ used to teleport the element to desired dom element
 
 
 
+to access the mutation:
+this.$store.commit('nameofmethod',1)
+
+to access the getters:
+this.$store.getters.finalCounter
+
+to access the action:
+this.$store.dispatch('nameofmethod',1)
 
 
 
+you can :
+
+commit ==> mutation
+dispatch ==> action
 
 
 
+-mutations cannot contain async code hence we need actions
 
 
+-MAP GETTERS
 
+import { mapGetters } from "vuex";
+import { mapGetters, mapActions, mapState, mapMutations } from 'vuex';
+
+export default {
+  computed: { 
+  
+    ...mapGetters(['finalCounter']),
+  }
+	
+}
+	
+////////////////////////// COMPOSITION API /////////////////////////////////
+
+
+export default { 
+
+import { ref } from "vue";
+
+ setup(){
+ 
+   const uname = ref("nyame");
+   
+   setTimeout(() => {
+   
+    uname.value = 'maxx'
+   
+   } , 2000)
+   
+   return { username:uname }
+
+ } 
+
+}
+
+<template>
+ <p> {{ username }}  <p>
+<template>
+
+
+-ref is only used for single values like bool , nums etc
+ if we use object in ref thenit cannot react to change inside it
+ 
+ ------------------------------------------------
+ 
+  setup(){
+ 
+   const uname = ref({
+    name:"hrutvik",
+    age:10
+   });
+   
+   setTimeout(() => {
+   
+    uname.value.name = 'maxx';
+    uname.value.age= 30
+   
+   } , 2000)
+   
+   return { username:uname.value.name }
+
+ }
+
+- hence this will not work , it will not update template
+
+-- yes you can pass whole uname in return and access the username.name there and it will work
+
+ ------------------------------------------------
+ 
+ 
+ import { reactive } from "vue";
+ 
+ const uname = reactive({
+    name:"hrutvik",
+    age:10
+ });
+ 
+ log( uname.name )
+ 
+ dont use .value
+ 
+ this works saem as ref but it only works for objects
+ 
+-- remember you still ne to pass the whole object not the individual keys
+   the object is reactive not the keys
+   
+   hence return { user : uname} not return { usernmae : uname.name}
+ 
+ ---------------------------------------------
+ 
+ torefs function fro vue
+ 
+ ---------------------------------------------
+ 
+ import { computed } from "vue"
+ 
+ const firstname = ref('')
+ const lastname = ref('')
+ 
+ const fullname = computed(function(){
+  return firstname.value + " " + lastname.value
+ })
+ 
+ computer return a ref hence in code if you need to access the fullname
+ then it will be fullname.value
+ 
+ 
+ ---------------------------------------------
+ 
+ -watcher
+ 
+ watch(firstname , (oldval, newval) => {
+ // function code
+ 
+ })
+ 
+ 
+  watch([firstname , lastname] , (oldvaluesArr, newvaluesArr) => {
+ // function code
+ 
+ })
+ 
+ --------------- props and emits and conext -----------------------------
+ 
+ 
+ setup(props , context){
+ 
+ context.emit("event",vals)
+ 
+ }
+ 
+ 
+  --------------- provide and inject -----------------------------
+ 
+ import {provide } form "vue"
+ 
+ const uage = ref(0)
+ 
+ provide("userage", uage)
+ 
+ 
+ 
+ import { inject } from "vue";
+ 
+ 
+ const age = inject("userage")
+ 
+ 
+ ------------------- router  ---------------------------------
+ 
+ import { useRoute , useRouter } from "vue-router";
+ 
+ const route = useRoute();
+ route.params
+ 
+ const router = useRouter();
+ outer.push("/") 
+ 
+ 
+ ------------------ vuex --------------------------------------
+ 
+ import { useStore} from "vuex"
+ 
+ const store = useStore();
+ 
+ store.dispatch("anythhing")
+ 
+ const counter = computed( () => {
+ return store.getters.counter
+ })
+ 
+ 
+ 
 
 ----------------------------------------------------------------
 doubts:
@@ -198,3 +510,14 @@ doubts:
 
 
 
+  <div class="mb-2 mt-2" v-for="n in formdata.experience">
+            {{ n }}
+
+            <div class="w-1/4">
+              <div class="title mb-1 ml-2">Company Name</div>
+              <input
+                v-model="n.companyname"
+                type="text"
+                placeholder="Company Name"
+              />
+            </div>

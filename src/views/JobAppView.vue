@@ -170,18 +170,19 @@
           <div class="mt-6 flex justify-end">
             <button
               type="button"
-              :disabled="experienceRows === 3"
+              :disabled="formdata.experience.length === 3"
               @click="(event) => AddExperienceRows()"
             >
               +
             </button>
           </div>
-          <div class="mb-2 mt-2" v-for="n in experienceRows">
+
+          <div class="mb-2 mt-2" v-for="(experience, n) of formdata.experience">
             <div class="flex justify-between gap-4" :key="n">
               <div class="w-1/4">
                 <div class="title mb-1 ml-2">Company Name</div>
                 <input
-                  v-model="formdata.experience[n - 1].companyname"
+                  v-model="experience.companyname"
                   type="text"
                   placeholder="Company Name"
                 />
@@ -190,7 +191,7 @@
               <div class="w-1/4">
                 <div class="title mb-1 ml-2">Designation</div>
                 <input
-                  v-model="formdata.experience[n - 1].designation"
+                  v-model="experience.designation"
                   type="text"
                   placeholder="Enter your designation"
                 />
@@ -198,18 +199,12 @@
 
               <div class="w-1/4">
                 <div class="title mb-1 ml-2">Joining Date</div>
-                <input
-                  v-model="formdata.experience[n - 1].joiningdate"
-                  type="date"
-                />
+                <input v-model="experience.joiningdate" type="date" />
               </div>
 
               <div class="w-1/4">
                 <div class="title mb-1 ml-2">Leaving Date</div>
-                <input
-                  v-model="formdata.experience[n - 1].leavingdate"
-                  type="date"
-                />
+                <input v-model="experience.leavingdate" type="date" />
               </div>
             </div>
           </div>
@@ -224,18 +219,18 @@
           <div class="mt-6 flex justify-end">
             <button
               type="button"
-              :disabled="educationRows === 3"
+              :disabled="formdata.education.length === 3"
               @click="(event) => AddEducationsRows()"
             >
               +
             </button>
           </div>
-          <div class="mb-2 mt-2" v-for="n in educationRows">
+          <div class="mb-2 mt-2" v-for="(education, n) of formdata.education">
             <div class="flex justify-between gap-4" :key="n">
               <div class="w-1/4">
                 <div class="title mb-1 ml-2">Course Name</div>
                 <input
-                  v-model="formdata.education[n - 1].coursename"
+                  v-model="education.coursename"
                   type="text"
                   placeholder="Enter your Course Name"
                 />
@@ -244,7 +239,7 @@
               <div class="w-1/4">
                 <div class="title mb-1 ml-2">Name of Board</div>
                 <input
-                  v-model="formdata.education[n - 1].nameofboard"
+                  v-model="education.nameofboard"
                   type="text"
                   placeholder="Enter your name of board"
                 />
@@ -253,7 +248,7 @@
               <div class="w-1/4">
                 <div class="title mb-1 ml-2">Passing Year</div>
                 <input
-                  v-model="formdata.education[n - 1].passingyear"
+                  v-model="education.passingyear"
                   type="text"
                   placeholder="Enter your passing year"
                 />
@@ -262,7 +257,7 @@
               <div class="w-1/4">
                 <div class="title mb-1 ml-2">Percentage</div>
                 <input
-                  v-model="formdata.education[n - 1].percentage"
+                  v-model="education.percentage"
                   type="text"
                   placeholder="Enter your percentage"
                 />
@@ -684,8 +679,6 @@ export default {
         ],
         preferences: {},
       },
-      experienceRows: 1,
-      educationRows: 1,
       cityArray: [],
       states: [
         { label: "gujarat", value: "gujarat" },
@@ -770,25 +763,23 @@ export default {
       }
     },
     AddExperienceRows: function () {
-      if (this.experienceRows < 3) {
+      if (this.formdata.experience.length < 3) {
         this.formdata.experience.push({
           companyname: "",
           joiningdate: "",
           leavingdate: "",
           designation: "",
         });
-        this.experienceRows++;
       }
     },
     AddEducationsRows() {
-      if (this.educationRows < 3) {
+      if (this.formdata.education.length < 3) {
         this.formdata.education.push({
           coursename: "",
           nameofboard: "",
           passingyear: "",
           percentage: "",
         });
-        this.educationRows++;
       }
     },
     getCity(e) {
@@ -806,8 +797,6 @@ export default {
     onEdit(data) {
       this.toggleMode("edit");
       this.formdata = { ...data };
-      this.experienceRows = data.experience.length;
-      this.educationRows = data.education.length;
       this.cityArray = this.city[data.state];
     },
     CheckLanguageIsSelected(language) {
@@ -822,8 +811,6 @@ export default {
     },
     resetForm() {
       this.formdata = this.initailFormData;
-      this.experienceRows = 1;
-      this.educationRows = 1;
       this.cityArray = [];
     },
   },
